@@ -9,12 +9,15 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+// ProductController for handling product data
 type ProductController struct{}
 
+// NewProductController returns pointer to ProductController
 func NewProductController() *ProductController {
 	return &ProductController{}
 }
 
+// GetAll products from DB
 func (pc ProductController) GetAll(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	prods, err := models.AllProducts()
 	if err != nil {
@@ -34,6 +37,32 @@ func (pc ProductController) GetAll(w http.ResponseWriter, r *http.Request, _ htt
 	fmt.Fprintf(w, "%s\n", pj)
 }
 
+// Insert new products to DB
 func (pc ProductController) Insert(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	// Waiting for implementation
+
+	if r.Method != "POST" {
+		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
+		return
+	}
+	if r.Body == nil {
+		http.Error(w, http.StatusText(400), http.StatusBadRequest)
+		return
+	}
+
+	// ADD HANDLING FOR ARRAY of JSON
+
+	prod, err := models.PutProduct(r)
+	if err != nil {
+		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+		return
+	}
+
+	prodj, err := json.Marshal(prod)
+	if err != nil {
+		fmt.Println(err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated) // 201
+	fmt.Fprintf(w, "%s\n", prodj)
 }
