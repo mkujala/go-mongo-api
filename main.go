@@ -15,5 +15,7 @@ func main() {
 
 	router.GET(apiURL+"/product", pc.GetAll)
 	router.POST(apiURL+"/product", pc.Insert)
+	router.DELETE(apiURL+"/product/:id", pc.Delete)
+
 	http.ListenAndServe(":8000", router)
 }

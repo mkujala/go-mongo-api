@@ -12,7 +12,7 @@ import (
 // Product type includes product fields
 type Product struct {
 	ID          bson.ObjectId `json:"id" bson:"_id"`
-	Name        string        `json:"name" bson:"name"`
+	Name        string        `json:"name,omitempty" bson:"name,omitempty" binding:"required"`
 	Description string        `json:"description" bson:"description"`
 	Image       string        `json:"image" bson:"image"`
 	Price       float32       `json:"price" bson:"price"`
@@ -34,21 +34,27 @@ func PutProduct(r *http.Request) (Product, error) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		return prod, err
 	}
-	//fmt.Println(string(body))
-	err = json.Unmarshal(body, &prod)
-	if err != nil {
-		panic(err)
-	}
-	// fmt.Println(prod.Name)
+	//fmt.Println(string(body)) // DEBUG print request body
 
+	err = json.Unmarshal(body, &prod) // -> prod.Name, prod.Image, prod.Price etc.
+	if err != nil {
+		return prod, err
+	}
 	prod.ID = bson.NewObjectId()
 
 	// insert values
 	err = config.Products.Insert(prod)
-	// if err != nil {
-	// 	return prod, errors.New("500. Internal Server Error." + err.Error())
-	// }
 	return prod, err
+}
+
+// DeleteProduct by _id from MongoDB
+func DeleteProduct(id string) error {
+	bsonObjectID := bson.ObjectIdHex(id)
+	err := config.Products.Remove(bson.M{"_id": bsonObjectID})
+	if err != nil {
+		return err
+	}
+	return nil
 }

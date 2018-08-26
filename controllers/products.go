@@ -66,3 +66,23 @@ func (pc ProductController) Insert(w http.ResponseWriter, r *http.Request, _ htt
 	w.WriteHeader(http.StatusCreated) // 201
 	fmt.Fprintf(w, "%s\n", prodj)
 }
+
+// Delete product from DB
+func (pc ProductController) Delete(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	if r.Method != "DELETE" {
+		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
+		return
+	}
+	if p.ByName("id") == "" {
+		http.Error(w, http.StatusText(400), http.StatusBadRequest)
+		return
+	}
+
+	err := models.DeleteProduct(p.ByName("id"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent) // 204
+}
