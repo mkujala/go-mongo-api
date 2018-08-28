@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"go-mongo-api/config"
 	"io/ioutil"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 // Product type includes product fields
 type Product struct {
 	ID          bson.ObjectId `json:"id" bson:"_id"`
-	Name        string        `json:"name,omitempty" bson:"name,omitempty" binding:"required"`
+	Name        string        `json:"name,omitempty" bson:"name,omitempty"` // required
 	Description string        `json:"description" bson:"description"`
 	Image       string        `json:"image" bson:"image"`
 	Price       float32       `json:"price" bson:"price"`
@@ -28,6 +29,16 @@ func AllProducts() ([]Product, error) {
 	return prod, nil
 }
 
+// FilterProducts with search string
+func FilterProducts(field string, search string) ([]Product, error) {
+	prod := []Product{}
+	err := config.Products.Find(bson.M{}).All(&prod) // WIP
+	if err != nil {
+		return nil, err
+	}
+	return prod, nil
+}
+
 // PutProduct inserts to MongoDB
 func PutProduct(r *http.Request) (Product, error) {
 	prod := Product{}
@@ -36,13 +47,20 @@ func PutProduct(r *http.Request) (Product, error) {
 	if err != nil {
 		return prod, err
 	}
-	//fmt.Println(string(body)) // DEBUG print request body
+	// fmt.Printf("type %T, value %v\n", body, string(body)) // DEBUG print request body
 
 	err = json.Unmarshal(body, &prod) // -> prod.Name, prod.Image, prod.Price etc.
 	if err != nil {
 		return prod, err
 	}
 	prod.ID = bson.NewObjectId()
+
+	// Check for required fields with Validator
+	var v Validator
+	if !v.Required(prod.Name) {
+		err = fmt.Errorf("Field 'name' is required")
+		return prod, err
+	}
 
 	// insert values
 	err = config.Products.Insert(prod)

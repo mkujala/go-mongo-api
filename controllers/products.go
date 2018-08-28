@@ -54,7 +54,7 @@ func (pc ProductController) Insert(w http.ResponseWriter, r *http.Request, _ htt
 
 	prod, err := models.PutProduct(r)
 	if err != nil {
-		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
