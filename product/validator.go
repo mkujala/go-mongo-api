@@ -1,4 +1,4 @@
-package models
+package product
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ type Validator struct {
 type value interface{}
 
 // Required validates that required field is not empty
-func (v *Validator) Required(val value) bool {
+func (v *Validator) required(val value) bool {
 	// fmt.Printf("type of value: %T\n", val) 		// DEBUG
 
 	if v.err != nil {

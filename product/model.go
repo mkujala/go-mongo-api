@@ -1,4 +1,4 @@
-package models
+package product
 
 import (
 	"encoding/json"
@@ -19,8 +19,8 @@ type Product struct {
 	Price       float32       `json:"price" bson:"price"`
 }
 
-// AllProducts from MongoDB
-func AllProducts() ([]Product, error) {
+// allProducts from MongoDB
+func allProducts() ([]Product, error) {
 	prod := []Product{}
 	err := config.Products.Find(bson.M{}).All(&prod)
 	if err != nil {
@@ -29,20 +29,22 @@ func AllProducts() ([]Product, error) {
 	return prod, nil
 }
 
-// FilterProducts with search string
-func FilterProducts(field string, search string) ([]Product, error) {
+// filterProducts with search string
+func filterProducts(field string, search string) ([]Product, error) {
+	//-----------------
+	// WORK IN PROGRESS
+	//-----------------
 	prod := []Product{}
-	err := config.Products.Find(bson.M{}).All(&prod) // WIP
+	err := config.Products.Find(bson.M{}).All(&prod)
 	if err != nil {
 		return nil, err
 	}
 	return prod, nil
 }
 
-// PutProduct inserts to MongoDB
-func PutProduct(r *http.Request) (Product, error) {
+// putProduct inserts to MongoDB
+func putProduct(r *http.Request) (Product, error) {
 	prod := Product{}
-
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return prod, err
@@ -57,7 +59,7 @@ func PutProduct(r *http.Request) (Product, error) {
 
 	// Check for required fields with Validator
 	var v Validator
-	if !v.Required(prod.Name) {
+	if !v.required(prod.Name) {
 		err = fmt.Errorf("Field 'name' is required")
 		return prod, err
 	}
@@ -67,8 +69,8 @@ func PutProduct(r *http.Request) (Product, error) {
 	return prod, err
 }
 
-// DeleteProduct by _id from MongoDB
-func DeleteProduct(id string) error {
+// deleteProduct by _id from MongoDB
+func deleteProduct(id string) error {
 	bsonObjectID := bson.ObjectIdHex(id)
 	err := config.Products.Remove(bson.M{"_id": bsonObjectID})
 	if err != nil {

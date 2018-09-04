@@ -13,7 +13,10 @@ var DB *mgo.Database
 var Products *mgo.Collection
 
 func init() {
-	s, err := mgo.Dial("mongodb://localhost")
+	const mongoURI = "mongodb://localhost"
+	const mongoDB = "go_mongo_api"
+
+	s, err := mgo.Dial(mongoURI)
 	if err != nil {
 		panic(err)
 	}
@@ -22,7 +25,7 @@ func init() {
 		panic(err)
 	}
 
-	DB = s.DB("go_mongo_api")
+	DB = s.DB(mongoDB)
 	Products = DB.C("products")
 
 	fmt.Println("You connected to your mongo database.")
