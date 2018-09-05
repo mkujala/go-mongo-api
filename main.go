@@ -9,8 +9,10 @@ import (
 )
 
 // Constants
-const apiURL = "/api/v1"
-const port = ":8000"
+const (
+	apiURL = "/api/v1"
+	port   = ":8000"
+)
 
 func main() {
 	router := httprouter.New()

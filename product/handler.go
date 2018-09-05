@@ -29,10 +29,6 @@ func GetAll(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 // Insert new products to DB
 func Insert(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	if r.Method != "POST" {
-		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
-		return
-	}
 	if r.Body == nil {
 		http.Error(w, http.StatusText(400), http.StatusBadRequest)
 		return
@@ -60,10 +56,6 @@ func Insert(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 // Delete product from DB
 func Delete(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	if r.Method != "DELETE" {
-		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
-		return
-	}
 	if p.ByName("id") == "" {
 		http.Error(w, http.StatusText(400), http.StatusBadRequest)
 		return

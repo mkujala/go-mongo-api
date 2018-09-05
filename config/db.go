@@ -13,8 +13,10 @@ var DB *mgo.Database
 var Products *mgo.Collection
 
 func init() {
-	const mongoURI = "mongodb://localhost"
-	const mongoDB = "go_mongo_api"
+	const (
+		mongoURI = "mongodb://localhost"
+		mongoDB  = "go_mongo_api"
+	)
 
 	s, err := mgo.Dial(mongoURI)
 	if err != nil {
